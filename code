@@ -1,0 +1,22 @@
+import requests
+import smtplib
+
+MY_EMAIL = 'email'
+MY_PASSWORD = 'password'
+response = requests.get('https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/<location><api_key>')
+data = response.json()
+opady = data['days'][1].get('preciptype', [])
+def sprawdzanie_opadow():
+    if opady is not None and ('rain' in opady or opady == ['rain']):
+        connection = smtplib.SMTP('smtp.gmail.com', 587)
+        connection.starttls()
+        connection.login(MY_EMAIL, MY_PASSWORD)
+        subject = "Subject: Alert pogodowy\n"
+        body = "Jutro bedzie padal deszcz! Wez parasol."
+        connection.sendmail(
+            from_addr=MY_EMAIL,
+            to_addrs=MY_EMAIL,
+            msg = subject + "\n" + body)
+        connection.quit()
+
+sprawdzanie_opadow()
